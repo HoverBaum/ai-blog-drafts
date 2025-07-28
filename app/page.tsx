@@ -1,3 +1,4 @@
+'use client'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -9,10 +10,8 @@ export default function Home() {
   return (
     <div className="p-4">
       <hgroup className="text-center">
-        <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balanc mt-8">
-          AI Blog Drafts
-        </h1>
-        <p>Generate drafts for your blog posts using AI.</p>
+        <h1 className="mt-8">AI Blog Drafts</h1>
+        <p className="mt-0">Generate drafts for your blog posts using AI.</p>
       </hgroup>
       <div className="my-4 flex justify-center">
         <Alert className="max-w-prose">
@@ -27,14 +26,12 @@ export default function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-8">
         <div>
-          <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-            Blog idea
-          </h2>
-          <p className="leading-7 my-2">
+          <h2>Blog idea</h2>
+          <p className="leading-7 mt-4">
             Describe your idea in voice or writing or both.
           </p>
 
-          <div className="grid w-full gap-3">
+          <div className="grid w-full gap-3 mt-4">
             <Label className="font-semibold" htmlFor="ideaVoice">
               Your Idea in voice
             </Label>
@@ -57,7 +54,9 @@ export default function Home() {
           {/* End Writing Idea */}
 
           <div className="mt-8">
-            <ExamplePosts />
+            <ExamplePosts
+              onExamplesChange={(examples) => console.log(examples)}
+            />
           </div>
         </div>
 

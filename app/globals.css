@@ -119,4 +119,53 @@
   body {
     @apply bg-background text-foreground;
   }
+  h1 {
+    @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
+  }
+  h2 {
+    @apply scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0;
+  }
+  h3 {
+    @apply scroll-m-20 text-2xl font-semibold tracking-tight;
+  }
+  h4 {
+    @apply scroll-m-20 text-xl font-semibold tracking-tight;
+  }
+  p {
+    @apply leading-7 [&:not(:first-child)]:mt-6;
+  }
+  blockquote {
+    @apply mt-6 border-l-2 pl-6 italic;
+  }
+  ul {
+    @apply my-6 ml-6 list-disc [&>li]:mt-2;
+  }
+  ol {
+    @apply my-6 ml-6 list-decimal [&>li]:mt-2;
+  }
+  code {
+    @apply relative rounded bg-muted px-[0.3em] py-[0.2em] font-mono text-sm;
+  }
+  table {
+    @apply w-full;
+  }
+  th {
+    @apply border-b px-4 py-2 text-left font-bold;
+  }
+  td {
+    @apply border-b px-4 py-2 text-left;
+  }
+  /* Optional: for "lead", "large", "small", "muted" utility classes */
+  .lead {
+    @apply text-xl text-muted-foreground;
+  }
+  .large {
+    @apply text-lg font-semibold;
+  }
+  .small {
+    @apply text-sm font-medium;
+  }
+  .muted {
+    @apply text-sm text-muted-foreground;
+  }
 }
