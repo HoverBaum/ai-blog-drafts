@@ -46,6 +46,7 @@ export default function Home() {
               Your Idea in writing
             </Label>
             <Textarea
+              className="h-32 overflow-auto resize-none"
               placeholder="Type your ideas or paste a draft here."
               id="ideaTextarea"
             />
