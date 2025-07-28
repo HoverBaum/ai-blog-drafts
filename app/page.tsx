@@ -4,9 +4,12 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { InfoIcon, MicIcon } from 'lucide-react'
-import { ExamplePosts } from './ExamplePosts'
+import { ExamplePost, ExamplePosts } from './ExamplePosts'
+import { useState } from 'react'
 
 export default function Home() {
+  const [examples, setExamples] = useState<ExamplePost[]>([])
+
   return (
     <div className="p-4">
       <hgroup className="text-center">
@@ -55,9 +58,7 @@ export default function Home() {
           {/* End Writing Idea */}
 
           <div className="mt-8">
-            <ExamplePosts
-              onExamplesChange={(examples) => console.log(examples)}
-            />
+            <ExamplePosts onExamplesChange={setExamples} />
           </div>
         </div>
 

@@ -5,10 +5,17 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { useEffect, useState } from 'react'
 import { PlusIcon, TrashIcon } from 'lucide-react'
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 const LOCAL_STORAGE_KEY = 'ai_draft_examples'
 
-type ExamplePost = {
+export type ExamplePost = {
   id: string
   title: string
   content: string
@@ -38,60 +45,67 @@ export const ExamplePosts = ({ onExamplesChange }: ExamplePostsProps) => {
 
   return (
     <div>
-      <h2>Example posts</h2>
+      <h2>Example posts {examples.length > 0 && `(${examples.length})`}</h2>
       <p className="mt-4">
         Add example of Blogposts your wrote yourself and are proud of or would
         like the AI to use the style of. These posts will be analyzed to help
         generate better drafts.
+        <br />
+        We recommend adding at least 3 examples.
       </p>
 
       {examples.map((example, idx) => (
-        <div key={example.id} className="my-4 p-4 border rounded ">
-          <div className="mb-3">
-            <Label
-              className="font-semibold"
-              htmlFor={`example-title-${example.id}`}
-            >
-              Title
-            </Label>
-            <Input
-              id={`example-title-${example.id}`}
-              className="mt-1"
-              value={example.title}
-              onChange={(e) => {
-                const newTitle = e.target.value
-                setExamples((exs) =>
-                  exs.map((ex, i) =>
-                    i === idx ? { ...ex, title: newTitle } : ex
+        <Card key={example.id} className="my-8">
+          <CardHeader>
+            <CardTitle>{example.title || 'Untitled'} </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-3">
+              <Label
+                className="font-semibold"
+                htmlFor={`example-title-${example.id}`}
+              >
+                Title
+              </Label>
+              <Input
+                id={`example-title-${example.id}`}
+                className="mt-1"
+                value={example.title}
+                onChange={(e) => {
+                  const newTitle = e.target.value
+                  setExamples((exs) =>
+                    exs.map((ex, i) =>
+                      i === idx ? { ...ex, title: newTitle } : ex
+                    )
                   )
-                )
-              }}
-              placeholder="Enter example post title"
-            />
-          </div>
-          <div>
-            <Label
-              className="font-semibold"
-              htmlFor={`example-content-${example.id}`}
-            >
-              Content
-            </Label>
-            <Textarea
-              id={`example-content-${example.id}`}
-              className="mt-1 h-32 overflow-auto resize-none"
-              value={example.content}
-              onChange={(e) => {
-                const newContent = e.target.value
-                setExamples((exs) =>
-                  exs.map((ex, i) =>
-                    i === idx ? { ...ex, content: newContent } : ex
+                }}
+                placeholder="Enter example post title"
+              />
+            </div>
+            <div>
+              <Label
+                className="font-semibold"
+                htmlFor={`example-content-${example.id}`}
+              >
+                Content
+              </Label>
+              <Textarea
+                id={`example-content-${example.id}`}
+                className="mt-1 h-32 overflow-auto resize-none"
+                value={example.content}
+                onChange={(e) => {
+                  const newContent = e.target.value
+                  setExamples((exs) =>
+                    exs.map((ex, i) =>
+                      i === idx ? { ...ex, content: newContent } : ex
+                    )
                   )
-                )
-              }}
-              placeholder="Enter example post content"
-            />
-          </div>
-          <div className="mt-3 flex justify-end">
+                }}
+                placeholder="Enter example post content"
+              />
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-end">
             <Button
               variant="destructive"
               size="sm"
@@ -102,12 +116,12 @@ export const ExamplePosts = ({ onExamplesChange }: ExamplePostsProps) => {
             >
               <TrashIcon /> Remove
             </Button>
-          </div>
-        </div>
+          </CardFooter>
+        </Card>
       ))}
 
       <Button
-        className="mt-6"
+        className={`${examples.length > 0 ? 'mt-6' : ''}`}
         onClick={() =>
           setExamples((current) =>
             current.concat([
