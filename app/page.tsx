@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { InfoIcon, MicIcon } from 'lucide-react'
 import { ExamplePost, ExamplePosts } from './ExamplePosts'
 import { useState } from 'react'
+import { AudioRecorder } from './AudioRecorder'
 
 export default function Home() {
   const [examples, setExamples] = useState<ExamplePost[]>([])
@@ -34,14 +35,8 @@ export default function Home() {
             Describe your idea in voice or writing or both.
           </p>
 
-          <div className="grid w-full gap-3 mt-4">
-            <Label className="font-semibold" htmlFor="ideaVoice">
-              Your Idea in voice
-            </Label>
-
-            <Button>
-              <MicIcon /> Record Audio
-            </Button>
+          <div className="mt-4">
+            <AudioRecorder />
           </div>
 
           <div className="grid w-full gap-3 mt-4">
