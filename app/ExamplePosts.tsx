@@ -121,7 +121,7 @@ export const ExamplePosts = ({ onExamplesChange }: ExamplePostsProps) => {
       ))}
 
       <Button
-        className={`${examples.length > 0 ? 'mt-6' : ''}`}
+        className={`${examples.length === 0 ? 'mt-6' : ''}`}
         onClick={() =>
           setExamples((current) =>
             current.concat([
