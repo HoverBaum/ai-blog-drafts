@@ -27,6 +27,7 @@ type ExamplePostsProps = {
 
 export const ExamplePosts = ({ onExamplesChange }: ExamplePostsProps) => {
   const [examples, setExamples] = useState<ExamplePost[]>([])
+  const [loading, setLoading] = useState(true)
 
   // Initially load examples from local storage, if any are present.
   useEffect(() => {
@@ -34,14 +35,20 @@ export const ExamplePosts = ({ onExamplesChange }: ExamplePostsProps) => {
     if (storedExamples) {
       setExamples(JSON.parse(storedExamples))
     }
+    setLoading(false)
   }, [])
 
   // Call onExamplesChange whenever examples change.
   useEffect(() => {
+    if (loading) return
     onExamplesChange(examples)
-    // Also store examples in local storage
+  }, [examples, onExamplesChange, loading])
+
+  // Save examples to local storage whenever they change.
+  useEffect(() => {
+    if (loading) return
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(examples))
-  }, [examples, onExamplesChange])
+  }, [examples, loading])
 
   return (
     <div>
