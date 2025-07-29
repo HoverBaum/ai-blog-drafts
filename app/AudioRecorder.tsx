@@ -1,7 +1,13 @@
 import React, { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { MicIcon, StopCircle, PlayCircle, Trash2 } from 'lucide-react'
+import {
+  MicIcon,
+  StopCircle,
+  Trash2,
+  PauseCircleIcon,
+  PlayCircleIcon,
+} from 'lucide-react'
 
 type AudioRecorderProps = {
   onAudioChange?: (audio: Blob | null) => void
@@ -85,7 +91,6 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
 
   const handlePlay = () => {
     if (audioRef.current) {
-      audioRef.current.currentTime = 0
       audioRef.current.play()
       setIsPlaying(true)
       audioRef.current.onended = () => setIsPlaying(false)
@@ -130,6 +135,13 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
     recordingStartTime.current = null
   }
 
+  function handlePause(): void {
+    if (audioRef.current) {
+      audioRef.current.pause()
+      setIsPlaying(false)
+    }
+  }
+
   return (
     <div className="grid w-full gap-3">
       <Label className="font-semibold" htmlFor="ideaVoice">
@@ -142,7 +154,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
       )}
       {recording && (
         <Button variant="destructive" onClick={stopRecording}>
-          <StopCircle className="mr-2 animate-pulse text-red-600" />
+          <StopCircle className="mr-2 text-white" />
           Stop Recording
           <span className="ml-2 text-sm text-white tabular-nums w-12 inline-block text-right">
             {formatTime(duration)}
@@ -152,10 +164,17 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
       {audioUrl && !recording && (
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <Button onClick={handlePlay} disabled={isPlaying}>
-              <PlayCircle className="mr-2" />{' '}
-              {isPlaying ? 'Playing...' : 'Play'}
-            </Button>
+            {!isPlaying && (
+              <Button onClick={handlePlay}>
+                <PlayCircleIcon className="mr-2" /> Play
+              </Button>
+            )}
+            {isPlaying && (
+              <Button onClick={handlePause}>
+                <PauseCircleIcon className="mr-2" /> Pause
+              </Button>
+            )}
+
             <Button variant="ghost" onClick={handleDelete}>
               <Trash2 className="mr-2" /> Delete
             </Button>
