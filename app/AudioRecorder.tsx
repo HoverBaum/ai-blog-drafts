@@ -19,6 +19,8 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunks = useRef<Blob[]>([])
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const recordingStartTime = useRef<number | null>(null)
+  const recordingInterval = useRef<NodeJS.Timeout | null>(null)
 
   const startRecording = async () => {
     setAudioUrl(null)
@@ -43,9 +45,33 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
         setAudioUrl(url)
         if (onAudioChange) onAudioChange(blob)
         stream.getTracks().forEach((track) => track.stop())
+        // Set duration to the recorded duration
+        if (recordingStartTime.current !== null) {
+          const recordedSecs = Math.round(
+            (Date.now() - recordingStartTime.current) / 1000
+          )
+          setDuration(recordedSecs)
+        }
+        // Clear timer
+        if (recordingInterval.current) {
+          clearInterval(recordingInterval.current)
+          recordingInterval.current = null
+        }
+        recordingStartTime.current = null
       }
       mediaRecorder.start()
       setRecording(true)
+      // Start timer for recording duration
+      recordingStartTime.current = Date.now()
+      setDuration(0)
+      if (recordingInterval.current) clearInterval(recordingInterval.current)
+      recordingInterval.current = setInterval(() => {
+        if (recordingStartTime.current !== null) {
+          setDuration(
+            Math.round((Date.now() - recordingStartTime.current) / 1000)
+          )
+        }
+      }, 200)
     } catch (err) {
       alert('Could not access microphone.')
     }
@@ -54,6 +80,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
   const stopRecording = () => {
     mediaRecorderRef.current?.stop()
     setRecording(false)
+    // Timer cleanup will be handled in onstop
   }
 
   const handlePlay = () => {
@@ -69,37 +96,12 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
     const audio = audioRef.current
     if (!audio) return
 
-    const updateDuration = () => {
-      // Wait for metadata and readyState to be HAVE_METADATA or more
-      if (
-        audio.duration &&
-        isFinite(audio.duration) &&
-        audio.duration > 0 &&
-        audio.readyState >= 1
-      ) {
-        setDuration(audio.duration)
-      }
-    }
     const updateCurrentTime = () => setCurrentTime(audio.currentTime || 0)
 
-    // Try to force metadata load if not already loaded
-    if (audioUrl && audio.readyState < 1) {
-      audio.load()
-    }
-
-    audio.addEventListener('loadedmetadata', updateDuration)
-    audio.addEventListener('durationchange', updateDuration)
     audio.addEventListener('timeupdate', updateCurrentTime)
     audio.addEventListener('ended', () => setCurrentTime(0))
 
-    // If metadata is already loaded, set duration immediately
-    if (audio.duration && isFinite(audio.duration) && audio.duration > 0) {
-      setDuration(audio.duration)
-    }
-
     return () => {
-      audio.removeEventListener('loadedmetadata', updateDuration)
-      audio.removeEventListener('durationchange', updateDuration)
       audio.removeEventListener('timeupdate', updateCurrentTime)
       audio.removeEventListener('ended', () => setCurrentTime(0))
     }
@@ -120,6 +122,12 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
     setCurrentTime(0)
     if (onAudioChange) onAudioChange(null)
     setIsPlaying(false)
+    // Clear timer if deleting during recording
+    if (recordingInterval.current) {
+      clearInterval(recordingInterval.current)
+      recordingInterval.current = null
+    }
+    recordingStartTime.current = null
   }
 
   return (
@@ -134,8 +142,11 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
       )}
       {recording && (
         <Button variant="destructive" onClick={stopRecording}>
-          <StopCircle className="mr-2 animate-pulse text-red-600" /> Stop
-          Recording
+          <StopCircle className="mr-2 animate-pulse text-red-600" />
+          Stop Recording
+          <span className="ml-2 text-sm text-white tabular-nums w-12 inline-block text-right">
+            {formatTime(duration)}
+          </span>
         </Button>
       )}
       {audioUrl && !recording && (
