@@ -1,9 +1,10 @@
 import React from 'react'
+import { OptionalAudio, OptionalString } from './blogpostDraft.fluss'
 
 export type DraftCreatorProps = {
   examples: any[]
-  ideaText: string
-  audioBlob: Blob | null
+  ideaText: OptionalString
+  audioBlob: OptionalAudio
 }
 
 export const DraftCreator = ({

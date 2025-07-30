@@ -12,14 +12,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { ExamplePost } from './blogpostDraft.fluss'
 
 const LOCAL_STORAGE_KEY = 'ai_draft_examples'
-
-export type ExamplePost = {
-  id: string
-  title: string
-  content: string
-}
 
 type ExamplePostsProps = {
   onExamplesChange: (examples: ExamplePost[]) => void

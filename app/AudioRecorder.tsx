@@ -10,7 +10,7 @@ import {
 } from 'lucide-react'
 
 type AudioRecorderProps = {
-  onAudioChange: (audio: Blob | null) => void
+  onAudioChange: (audio: Blob | undefined) => void
 }
 
 export const AudioRecorder: React.FC<AudioRecorderProps> = ({
@@ -18,7 +18,6 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
 }) => {
   const [recording, setRecording] = useState(false)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [duration, setDuration] = useState<number>(0)
   const [currentTime, setCurrentTime] = useState<number>(0)
@@ -31,10 +30,9 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
 
   const startRecording = async () => {
     setAudioUrl(null)
-    setAudioBlob(null)
     setDuration(0)
     setCurrentTime(0)
-    if (onAudioChange) onAudioChange(null)
+    if (onAudioChange) onAudioChange(undefined)
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       mediaStreamRef.current = stream
@@ -48,7 +46,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
       }
       mediaRecorder.onstop = () => {
         const blob = new Blob(audioChunks.current, { type: 'audio/webm' })
-        setAudioBlob(blob)
+
         const url = URL.createObjectURL(blob)
         setAudioUrl(url)
         if (onAudioChange) onAudioChange(blob)
@@ -122,10 +120,9 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
 
   const handleDelete = () => {
     setAudioUrl(null)
-    setAudioBlob(null)
     setDuration(0)
     setCurrentTime(0)
-    if (onAudioChange) onAudioChange(null)
+    if (onAudioChange) onAudioChange(undefined)
     setIsPlaying(false)
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach((track) => track.stop())

@@ -3,15 +3,20 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { InfoIcon } from 'lucide-react'
-import { ExamplePost, ExamplePosts } from './ExamplePosts'
+import { ExamplePosts } from './ExamplePosts'
 import { useState } from 'react'
 import { AudioRecorder } from './AudioRecorder'
 import { DraftCreator } from './DraftCreator'
+import {
+  ExamplePost,
+  OptionalAudio,
+  OptionalString,
+} from './blogpostDraft.fluss'
 
 export default function Home() {
   const [examples, setExamples] = useState<ExamplePost[]>([])
-  const [ideaText, setIdeaText] = useState('')
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
+  const [ideaText, setIdeaText] = useState<OptionalString>('')
+  const [audioBlob, setAudioBlob] = useState<OptionalAudio>(undefined)
 
   return (
     <div className="p-4">
