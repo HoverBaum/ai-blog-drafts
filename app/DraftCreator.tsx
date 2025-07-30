@@ -12,11 +12,22 @@ import { writeDraft } from './_flussFunctions/writeDraft'
 
 import { OpenAiKeyInput } from '../components/OpenAiKeyInput'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { CopyIcon, LightbulbIcon, RocketIcon, SparkleIcon } from 'lucide-react'
+import {
+  ChevronsUpDownIcon,
+  CopyIcon,
+  LightbulbIcon,
+  RocketIcon,
+  SparkleIcon,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Markdown from 'react-markdown'
-import { Card } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { understandStyle } from './_flussFunctions/understandStyle'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible'
 
 export type DraftCreatorProps = {
   examples: ExampleArray
@@ -49,6 +60,7 @@ export const DraftCreator = ({
   }, [providedAllInputs, openAiKey, loading])
 
   const createDraft = async () => {
+    setPostDraft(null)
     if (client === null) {
       console.error('OpenAI client is not initialized.')
       alert(
@@ -120,6 +132,31 @@ export const DraftCreator = ({
             </span>
           </p>
         )}
+
+        <Collapsible className="p-2 px-4">
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost">
+              What will this cost?
+              <ChevronsUpDownIcon />
+              <span className="sr-only">Toggle</span>
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="my-1">
+            <Card>
+              <CardContent>
+                <p>
+                  Using three example posts with about 500 words each and a good
+                  two to three paragraphs of description should result in a cost
+                  of about 0.01$.
+                </p>
+                <p>
+                  We mainly use 4.1-mini and only rely on 4.1 for a single
+                  request.
+                </p>
+              </CardContent>
+            </Card>
+          </CollapsibleContent>
+        </Collapsible>
 
         <Button
           disabled={!canCreateDraft || isFlussRunning}
