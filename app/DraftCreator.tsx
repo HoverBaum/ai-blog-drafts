@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   ExampleArray,
   OptionalAudio,
@@ -28,6 +28,7 @@ export const DraftCreator = ({
 }: DraftCreatorProps) => {
   const { openAiKey, rememberKey, loading, setOpenAiKey, setRememberKey } =
     useOpenAiKey()
+  const [isFlussRunning, setIsFlussRunning] = useState(false)
 
   const providedAllInputs = useMemo(() => {
     return !!ideaText || !!audioBlob
@@ -38,7 +39,8 @@ export const DraftCreator = ({
   }, [providedAllInputs, openAiKey, loading])
 
   const createDraft = async () => {
-    runFluss({
+    setIsFlussRunning(true)
+    const result = await runFluss({
       inputs: {
         postVoiceNote: audioBlob,
         blogNotes: ideaText,
@@ -50,6 +52,8 @@ export const DraftCreator = ({
         writeDraft: writeDraft,
       },
     })
+    setIsFlussRunning(false)
+    console.log('result', result)
   }
 
   if (loading) {
@@ -99,28 +103,14 @@ export const DraftCreator = ({
         )}
 
         <Button
-          disabled={!canCreateDraft}
+          disabled={!canCreateDraft || isFlussRunning}
           onClick={createDraft}
           className="w-full mt-4"
         >
           <SparkleIcon />
-          Create Draft <SparkleIcon />
+          {isFlussRunning ? 'Creating' : 'Create Draft'} <SparkleIcon />
         </Button>
       </section>
-
-      <p>Examples</p>
-      <pre>{JSON.stringify(examples, null, 2)}</pre>
-      <p>Idea</p>
-      <pre>{ideaText}</pre>
-      <p>Audio</p>
-      {audioBlob ? (
-        <audio controls>
-          <source src={URL.createObjectURL(audioBlob)} type="audio/wav" />
-          Your browser does not support the audio element.
-        </audio>
-      ) : (
-        <p>No audio recorded yet.</p>
-      )}
     </div>
   )
 }

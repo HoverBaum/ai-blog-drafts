@@ -113,7 +113,7 @@ async function executeStep<ID extends FlussStepId>(
 
     step.arguments.forEach((arg) => {
       const sourceStep = flowState[arg.sourceStepId]
-      if (sourceStep.status !== 'done' || sourceStep.result === undefined) {
+      if (sourceStep.status !== 'done') {
         throw new Error(
           'Source step ' +
             arg.sourceStepId +
@@ -158,7 +158,7 @@ function canStepRun<ID extends FlussStepId>(
 ): boolean {
   return step.arguments.every((arg) => {
     const sourceStep = flowState[arg.sourceStepId]
-    return sourceStep.status === 'done' && sourceStep.result !== undefined
+    return sourceStep.status === 'done'
   })
 }
 
