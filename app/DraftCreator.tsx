@@ -13,6 +13,12 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { InfoIcon } from 'lucide-react'
 
 export type DraftCreatorProps = {
   examples: ExampleArray
@@ -56,7 +62,8 @@ export const DraftCreator = ({
 
   if (!openAiKey) {
     return (
-      <div className="mx-auto mt-8">
+      <div>
+        <h3>OpenAI API Key</h3>
         <p>
           We need you to provide an API key for OpenAI, which we use for GenAI.
           This application runs entirely client side!
@@ -67,24 +74,40 @@ export const DraftCreator = ({
         >
           OpenAI API key
         </Label>
-        <form onSubmit={handleKeySubmit} className="flex gap-2 items-end">
+        <form onSubmit={handleKeySubmit}>
           <Input
             id="openai-key-input"
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Enter OpenAI API key"
-            className="flex-1"
+            className="w-full"
             autoComplete="off"
           />
-          <Checkbox
-            checked={rememberKey}
-            onCheckedChange={(checked) => setRememberKey(!!checked)}
-            id="remember-key-checkbox"
-          />
-          <Label htmlFor="remember-key-checkbox" className="mb-0 ml-2">
-            Remember key
-          </Label>
+          <div className="flex items-center ">
+            <Checkbox
+              checked={rememberKey}
+              onCheckedChange={(checked) => setRememberKey(!!checked)}
+              id="remember-key-checkbox"
+            />
+            <Label htmlFor="remember-key-checkbox" className="mb-0 ml-2">
+              Remember key{' '}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="icon" variant="ghost">
+                    <InfoIcon />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <span>
+                    This will store you key
+                    <br />
+                    in localstorage.
+                  </span>
+                </TooltipContent>
+              </Tooltip>
+            </Label>
+          </div>
           <Button type="submit">Save Key</Button>
         </form>
       </div>

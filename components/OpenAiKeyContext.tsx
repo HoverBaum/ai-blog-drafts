@@ -23,8 +23,8 @@ export const OpenAiKeyProvider = ({ children }: { children: ReactNode }) => {
 
   // On mount, load from localStorage if present
   React.useEffect(() => {
-    const storedKey = localStorage.getItem('openai-api-key')
-    const storedRemember = localStorage.getItem('openai-api-key-remember')
+    const storedKey = localStorage.getItem('abd-openai-api-key')
+    const storedRemember = localStorage.getItem('abd-openai-api-key-remember')
     if (storedKey && storedRemember === 'true') {
       setOpenAiKeyState(storedKey)
       setRememberKeyState(true)
@@ -35,21 +35,24 @@ export const OpenAiKeyProvider = ({ children }: { children: ReactNode }) => {
   const setOpenAiKey = (key: string, remember?: boolean) => {
     setOpenAiKeyState(key)
     if (remember ?? rememberKey) {
-      localStorage.setItem('openai-api-key', key)
-      localStorage.setItem('openai-api-key-remember', 'true')
+      localStorage.setItem('abd-openai-api-key', key)
+      localStorage.setItem('abd-openai-api-key-remember', 'true')
       setRememberKeyState(true)
     } else {
-      localStorage.removeItem('openai-api-key')
-      localStorage.setItem('openai-api-key-remember', 'false')
+      localStorage.removeItem('abd-openai-api-key')
+      localStorage.setItem('abd-openai-api-key-remember', 'false')
       setRememberKeyState(false)
     }
   }
 
   const setRememberKey = (remember: boolean) => {
     setRememberKeyState(remember)
-    localStorage.setItem('openai-api-key-remember', remember ? 'true' : 'false')
+    localStorage.setItem(
+      'abd-openai-api-key-remember',
+      remember ? 'true' : 'false'
+    )
     if (!remember) {
-      localStorage.removeItem('openai-api-key')
+      localStorage.removeItem('abd-openai-api-key')
     }
   }
 
