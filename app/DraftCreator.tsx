@@ -12,8 +12,10 @@ import { writeDraft } from './_flussFunctions/writeDraft'
 
 import { OpenAiKeyInput } from '../components/OpenAiKeyInput'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { LightbulbIcon, RocketIcon, SparkleIcon } from 'lucide-react'
+import { CopyIcon, LightbulbIcon, RocketIcon, SparkleIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import Markdown from 'react-markdown'
+import { Card } from '@/components/ui/card'
 
 export type DraftCreatorProps = {
   examples: ExampleArray
@@ -35,6 +37,7 @@ export const DraftCreator = ({
     client,
   } = useOpenAiKey()
   const [isFlussRunning, setIsFlussRunning] = useState(false)
+  const [postDraft, setPostDraft] = useState<string | null>(null)
 
   const providedAllInputs = useMemo(() => {
     return !!ideaText || !!audioBlob
@@ -67,6 +70,7 @@ export const DraftCreator = ({
     })
     setIsFlussRunning(false)
     console.log('result', result)
+    setPostDraft(result.postDraft)
   }
 
   if (loading) {
@@ -120,10 +124,28 @@ export const DraftCreator = ({
           onClick={createDraft}
           className="w-full mt-4"
         >
-          <SparkleIcon />
-          {isFlussRunning ? 'Creating' : 'Create Draft'} <SparkleIcon />
+          <SparkleIcon className={isFlussRunning ? 'animate-spin' : ''} />
+          {isFlussRunning ? 'Creating' : 'Create Draft'}{' '}
+          <SparkleIcon className={isFlussRunning ? 'animate-spin' : ''} />
         </Button>
       </section>
+
+      {postDraft && (
+        <section className="mt-6">
+          <h3>Your draft</h3>
+          <div className="p-4">
+            <Card className="p-4">
+              <Markdown>{postDraft}</Markdown>
+            </Card>
+          </div>
+          <Button
+            className="mt-4"
+            onClick={() => navigator.clipboard.writeText(postDraft)}
+          >
+            <CopyIcon /> Copy draft
+          </Button>
+        </section>
+      )}
     </div>
   )
 }
