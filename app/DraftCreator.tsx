@@ -1,8 +1,16 @@
 import React from 'react'
-import { OptionalAudio, OptionalString } from './blogpostDraft.fluss'
+import {
+  ExampleArray,
+  OptionalAudio,
+  OptionalString,
+  runFluss,
+} from './blogpostDraft.fluss'
+import { voiceNoteToString } from './_flussFunctions/voiceNoteToString'
+import { structureDescription } from './_flussFunctions/structureDescription'
+import { writeDraft } from './_flussFunctions/writeDraft'
 
 export type DraftCreatorProps = {
-  examples: any[]
+  examples: ExampleArray
   ideaText: OptionalString
   audioBlob: OptionalAudio
 }
@@ -12,6 +20,21 @@ export const DraftCreator = ({
   ideaText,
   audioBlob,
 }: DraftCreatorProps) => {
+  const createDeraft = async () => {
+    runFluss({
+      inputs: {
+        postVoiceNote: audioBlob,
+        blogNotes: ideaText,
+        examplePosts: examples,
+      },
+      stepFunctions: {
+        voiceNoteToString: voiceNoteToString,
+        structureDescription: structureDescription,
+        writeDraft: writeDraft,
+      },
+    })
+  }
+
   return (
     <div>
       <p>Examples</p>
