@@ -2,12 +2,15 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 
 // Define the context type
+import OpenAI from 'openai'
+
 interface OpenAiKeyContextType {
   openAiKey: string
   rememberKey: boolean
   loading: boolean
   setOpenAiKey: (key: string, remember?: boolean) => void
   setRememberKey: (remember: boolean) => void
+  client: OpenAI | null
 }
 
 // Create the context with default values
@@ -20,6 +23,7 @@ export const OpenAiKeyProvider = ({ children }: { children: ReactNode }) => {
   const [openAiKey, setOpenAiKeyState] = useState('')
   const [rememberKey, setRememberKeyState] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [client, setClient] = useState<OpenAI | null>(null)
 
   // On mount, load from localStorage if present
   React.useEffect(() => {
@@ -32,6 +36,17 @@ export const OpenAiKeyProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false)
   }, [])
 
+  // Create/destroy OpenAI client when openAiKey changes
+  React.useEffect(() => {
+    if (openAiKey) {
+      setClient(
+        new OpenAI({ apiKey: openAiKey, dangerouslyAllowBrowser: true })
+      )
+    } else {
+      setClient(null)
+    }
+  }, [openAiKey])
+
   const setOpenAiKey = (key: string, remember?: boolean) => {
     setOpenAiKeyState(key)
     if (remember ?? rememberKey) {
@@ -43,6 +58,7 @@ export const OpenAiKeyProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('abd-openai-api-key-remember', 'false')
       setRememberKeyState(false)
     }
+    // client will be created/destroyed by useEffect
   }
 
   const setRememberKey = (remember: boolean) => {
@@ -53,12 +69,20 @@ export const OpenAiKeyProvider = ({ children }: { children: ReactNode }) => {
     )
     if (!remember) {
       localStorage.removeItem('abd-openai-api-key')
+      setOpenAiKeyState('') // This will also destroy the client
     }
   }
 
   return (
     <OpenAiKeyContext.Provider
-      value={{ openAiKey, rememberKey, loading, setOpenAiKey, setRememberKey }}
+      value={{
+        openAiKey,
+        rememberKey,
+        loading,
+        setOpenAiKey,
+        setRememberKey,
+        client,
+      }}
     >
       {children}
     </OpenAiKeyContext.Provider>

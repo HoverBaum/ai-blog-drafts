@@ -26,8 +26,14 @@ export const DraftCreator = ({
   ideaText,
   audioBlob,
 }: DraftCreatorProps) => {
-  const { openAiKey, rememberKey, loading, setOpenAiKey, setRememberKey } =
-    useOpenAiKey()
+  const {
+    openAiKey,
+    rememberKey,
+    loading,
+    setOpenAiKey,
+    setRememberKey,
+    client,
+  } = useOpenAiKey()
   const [isFlussRunning, setIsFlussRunning] = useState(false)
 
   const providedAllInputs = useMemo(() => {
@@ -39,6 +45,13 @@ export const DraftCreator = ({
   }, [providedAllInputs, openAiKey, loading])
 
   const createDraft = async () => {
+    if (client === null) {
+      console.error('OpenAI client is not initialized.')
+      alert(
+        'OpenAI client is not initialized. Please check your API key and try again.'
+      )
+      return
+    }
     setIsFlussRunning(true)
     const result = await runFluss({
       inputs: {
@@ -48,8 +61,8 @@ export const DraftCreator = ({
       },
       stepFunctions: {
         voiceNoteToString: voiceNoteToString,
-        structureDescription: structureDescription,
-        writeDraft: writeDraft,
+        structureDescription: structureDescription(client),
+        writeDraft: writeDraft(client),
       },
     })
     setIsFlussRunning(false)
