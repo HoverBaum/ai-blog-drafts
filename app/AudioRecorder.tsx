@@ -23,6 +23,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
   const [duration, setDuration] = useState<number>(0)
   const [currentTime, setCurrentTime] = useState<number>(0)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const mediaStreamRef = useRef<MediaStream | null>(null)
   const audioChunks = useRef<Blob[]>([])
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const recordingStartTime = useRef<number | null>(null)
@@ -36,6 +37,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
     if (onAudioChange) onAudioChange(null)
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      mediaStreamRef.current = stream
       const mediaRecorder = new window.MediaRecorder(stream)
       mediaRecorderRef.current = mediaRecorder
       audioChunks.current = []
@@ -50,15 +52,12 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
         const url = URL.createObjectURL(blob)
         setAudioUrl(url)
         if (onAudioChange) onAudioChange(blob)
-        stream.getTracks().forEach((track) => track.stop())
-        // Set duration to the recorded duration
         if (recordingStartTime.current !== null) {
           const recordedSecs = Math.round(
             (Date.now() - recordingStartTime.current) / 1000
           )
           setDuration(recordedSecs)
         }
-        // Clear timer
         if (recordingInterval.current) {
           clearInterval(recordingInterval.current)
           recordingInterval.current = null
@@ -67,7 +66,6 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
       }
       mediaRecorder.start()
       setRecording(true)
-      // Start timer for recording duration
       recordingStartTime.current = Date.now()
       setDuration(0)
       if (recordingInterval.current) clearInterval(recordingInterval.current)
@@ -86,7 +84,10 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
   const stopRecording = () => {
     mediaRecorderRef.current?.stop()
     setRecording(false)
-    // Timer cleanup will be handled in onstop
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop())
+      mediaStreamRef.current = null
+    }
   }
 
   const handlePlay = () => {
@@ -112,7 +113,6 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
     }
   }, [audioUrl])
 
-  // Helper to format seconds as mm:ss
   const formatTime = (secs: number) => {
     if (!isFinite(secs) || isNaN(secs) || secs < 0) return '0:00'
     const m = Math.floor(secs / 60)
@@ -127,10 +127,9 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
     setCurrentTime(0)
     if (onAudioChange) onAudioChange(null)
     setIsPlaying(false)
-    // Clear timer if deleting during recording
-    if (recordingInterval.current) {
-      clearInterval(recordingInterval.current)
-      recordingInterval.current = null
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop())
+      mediaStreamRef.current = null
     }
     recordingStartTime.current = null
   }
