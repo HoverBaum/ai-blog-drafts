@@ -270,8 +270,12 @@ export async function runFluss(params: {
         runnableSteps.map((s) => s.id)
       )
 
+      const currentlyRunning = Object.values(flowState).filter(
+        (step) => step.status === 'running'
+      )
+
       // Check if we're done or stuck
-      if (runnableSteps.length === 0) {
+      if (runnableSteps.length === 0 && currentlyRunning.length === 0) {
         if (Object.values(flowState).every((step) => step.status === 'done')) {
           console.log('All steps done!')
           if (!flowState.end.result) {
@@ -286,18 +290,22 @@ export async function runFluss(params: {
       }
 
       // Execute all runnable steps
-      try {
-        await Promise.all(
-          runnableSteps.map((step) => {
-            step.status = 'running'
-            return executeStep(step as Step<FlussStepId>, flowState)
-          })
-        )
+      if (runnableSteps.length > 0) {
+        try {
+          await Promise.all(
+            runnableSteps.map(async (step) => {
+              step.status = 'running'
+              await executeStep(step as Step<FlussStepId>, flowState)
+              // After each step finishes, immediately try to process more steps
+              await processSteps()
+            })
+          )
 
-        // Continue processing
-        await processSteps()
-      } catch (error) {
-        reject(error)
+          // Continue processing
+          await processSteps()
+        } catch (error) {
+          reject(error)
+        }
       }
     }
 
