@@ -9,6 +9,9 @@ import { useOpenAiKey } from '../components/OpenAiKeyContext'
 import { voiceNoteToString } from './_flussFunctions/voiceNoteToString'
 import { structureDescription } from './_flussFunctions/structureDescription'
 import { writeDraft } from './_flussFunctions/writeDraft'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
 
 export type DraftCreatorProps = {
   examples: ExampleArray
@@ -47,16 +50,21 @@ export const DraftCreator = ({
 
   if (!openAiKey) {
     return (
-      <div>
-        <p>No OpenAI API key set. Please enter your key:</p>
-        <form onSubmit={handleKeySubmit}>
-          <input
+      <div className="mx-auto mt-8">
+        <Label htmlFor="openai-key-input" className="block mb-2 font-semibold">
+          OpenAI API key
+        </Label>
+        <form onSubmit={handleKeySubmit} className="flex gap-2 items-end">
+          <Input
+            id="openai-key-input"
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Enter OpenAI API key"
+            className="flex-1"
+            autoComplete="off"
           />
-          <button type="submit">Save Key</button>
+          <Button type="submit">Save Key</Button>
         </form>
       </div>
     )
