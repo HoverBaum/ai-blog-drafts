@@ -16,6 +16,7 @@ import { CopyIcon, LightbulbIcon, RocketIcon, SparkleIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Markdown from 'react-markdown'
 import { Card } from '@/components/ui/card'
+import { understandStyle } from './_flussFunctions/understandStyle'
 
 export type DraftCreatorProps = {
   examples: ExampleArray
@@ -66,6 +67,7 @@ export const DraftCreator = ({
         voiceNoteToString: voiceNoteToString,
         structureDescription: structureDescription(client),
         writeDraft: writeDraft(client),
+        understandStyle: understandStyle(client),
       },
     })
     setIsFlussRunning(false)
