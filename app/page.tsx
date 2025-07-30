@@ -1,15 +1,17 @@
 'use client'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { InfoIcon, MicIcon } from 'lucide-react'
+import { InfoIcon } from 'lucide-react'
 import { ExamplePost, ExamplePosts } from './ExamplePosts'
 import { useState } from 'react'
 import { AudioRecorder } from './AudioRecorder'
+import { DraftCreator } from './DraftCreator'
 
 export default function Home() {
   const [examples, setExamples] = useState<ExamplePost[]>([])
+  const [ideaText, setIdeaText] = useState('')
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
 
   return (
     <div className="p-4">
@@ -30,13 +32,13 @@ export default function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-8">
         <div>
-          <h2>Blog idea</h2>
+          <h3>Blog idea</h3>
           <p className="leading-7 mt-4">
             Describe your idea in voice or writing or both.
           </p>
 
           <div className="mt-4">
-            <AudioRecorder />
+            <AudioRecorder onAudioChange={(audio) => setAudioBlob(audio)} />
           </div>
 
           <div className="grid w-full gap-3 mt-4">
@@ -47,6 +49,8 @@ export default function Home() {
               className="h-32 overflow-auto resize-none"
               placeholder="Type your ideas or paste a draft here."
               id="ideaTextarea"
+              value={ideaText}
+              onChange={(e) => setIdeaText(e.target.value)}
             />
           </div>
 
@@ -58,7 +62,13 @@ export default function Home() {
         </div>
 
         {/* From here right */}
-        <div>right</div>
+        <div>
+          <DraftCreator
+            examples={examples}
+            ideaText={ideaText}
+            audioBlob={audioBlob}
+          />
+        </div>
       </div>
     </div>
   )

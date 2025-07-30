@@ -52,7 +52,7 @@ export const ExamplePosts = ({ onExamplesChange }: ExamplePostsProps) => {
 
   return (
     <div>
-      <h2>Example posts {examples.length > 0 && `(${examples.length})`}</h2>
+      <h3>Example posts {examples.length > 0 && `(${examples.length})`}</h3>
       <p className="mt-4">
         Add example of Blogposts your wrote yourself and are proud of or would
         like the AI to use the style of. These posts will be analyzed to help

@@ -10,7 +10,7 @@ import {
 } from 'lucide-react'
 
 type AudioRecorderProps = {
-  onAudioChange?: (audio: Blob | null) => void
+  onAudioChange: (audio: Blob | null) => void
 }
 
 export const AudioRecorder: React.FC<AudioRecorderProps> = ({
