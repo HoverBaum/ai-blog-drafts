@@ -39,10 +39,6 @@ export const OpenAiKeyInput: React.FC<OpenAiKeyInputProps> = ({
   return (
     <div>
       <h3>OpenAI API Key</h3>
-      <p>
-        We need you to provide an API key for OpenAI, which we use for GenAI.
-        This application runs entirely client side!
-      </p>
 
       {openAiKey && (
         <>
@@ -53,7 +49,7 @@ export const OpenAiKeyInput: React.FC<OpenAiKeyInputProps> = ({
               {openAiKey.substring(openAiKey.length - 4)}
             </pre>
             <div className="flex-grow"></div>
-            <Button variant="destructive" onClick={removeKey}>
+            <Button variant="ghost" onClick={removeKey}>
               <TrashIcon />
               Remove key
             </Button>
@@ -63,6 +59,10 @@ export const OpenAiKeyInput: React.FC<OpenAiKeyInputProps> = ({
 
       {!openAiKey && (
         <>
+          <p className="mb-2">
+            We need you to provide an API key for OpenAI. This application runs
+            entirely client side!
+          </p>
           <Label
             htmlFor="openai-key-input"
             className="block mb-2 font-semibold mt-4"

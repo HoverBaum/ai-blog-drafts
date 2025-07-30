@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useMemo } from 'react'
 import {
   ExampleArray,
   OptionalAudio,
@@ -9,17 +9,11 @@ import { useOpenAiKey } from '../components/OpenAiKeyContext'
 import { voiceNoteToString } from './_flussFunctions/voiceNoteToString'
 import { structureDescription } from './_flussFunctions/structureDescription'
 import { writeDraft } from './_flussFunctions/writeDraft'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-// Checkbox import removed; now handled in OpenAiKeyInput
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 
 import { OpenAiKeyInput } from '../components/OpenAiKeyInput'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { LightbulbIcon, RocketIcon, SparkleIcon } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export type DraftCreatorProps = {
   examples: ExampleArray
@@ -34,19 +28,16 @@ export const DraftCreator = ({
 }: DraftCreatorProps) => {
   const { openAiKey, rememberKey, loading, setOpenAiKey, setRememberKey } =
     useOpenAiKey()
-  const [inputValue, setInputValue] = useState('')
 
-  if (loading) {
-    return null // or a spinner/loading UI if desired
-  }
+  const providedAllInputs = useMemo(() => {
+    return !!ideaText || !!audioBlob
+  }, [ideaText, audioBlob])
 
-  const handleKeySubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setOpenAiKey(inputValue, rememberKey)
-    setInputValue('')
-  }
+  const canCreateDraft = useMemo(() => {
+    return providedAllInputs && openAiKey && !loading
+  }, [providedAllInputs, openAiKey, loading])
 
-  const createDeraft = async () => {
+  const createDraft = async () => {
     runFluss({
       inputs: {
         postVoiceNote: audioBlob,
@@ -61,6 +52,10 @@ export const DraftCreator = ({
     })
   }
 
+  if (loading) {
+    return null
+  }
+
   return (
     <div>
       <OpenAiKeyInput
@@ -69,6 +64,50 @@ export const DraftCreator = ({
         setOpenAiKey={setOpenAiKey}
         setRememberKey={setRememberKey}
       />
+
+      <section className="mt-6">
+        <h3>Create Draft</h3>
+        {!providedAllInputs && (
+          <Alert className="my-2">
+            <LightbulbIcon />
+            <AlertTitle>Idea missing</AlertTitle>
+            <AlertDescription>
+              Please provide at least a written idea for your post or recode a
+              voice note.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {!openAiKey && (
+          <Alert className="my-2">
+            <SparkleIcon />
+            <AlertTitle>API Key missing</AlertTitle>
+            <AlertDescription>
+              Please provide an OpenAI API key.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {canCreateDraft && (
+          <p className="flex gap-4 items-center px-2">
+            <RocketIcon />
+            <span>
+              You are good to go. The AI will create a draft based on your idea
+              and the provided examples. Just hit the button.
+            </span>
+          </p>
+        )}
+
+        <Button
+          disabled={!canCreateDraft}
+          onClick={createDraft}
+          className="w-full mt-4"
+        >
+          <SparkleIcon />
+          Create Draft <SparkleIcon />
+        </Button>
+      </section>
+
       <p>Examples</p>
       <pre>{JSON.stringify(examples, null, 2)}</pre>
       <p>Idea</p>
