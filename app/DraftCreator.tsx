@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   ExampleArray,
   OptionalAudio,
@@ -12,6 +12,7 @@ import { writeDraft } from './_flussFunctions/writeDraft'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
 
 export type DraftCreatorProps = {
   examples: ExampleArray
@@ -24,12 +25,17 @@ export const DraftCreator = ({
   ideaText,
   audioBlob,
 }: DraftCreatorProps) => {
-  const { openAiKey, setOpenAiKey } = useOpenAiKey()
+  const { openAiKey, rememberKey, loading, setOpenAiKey, setRememberKey } =
+    useOpenAiKey()
   const [inputValue, setInputValue] = useState('')
+
+  if (loading) {
+    return null // or a spinner/loading UI if desired
+  }
 
   const handleKeySubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setOpenAiKey(inputValue)
+    setOpenAiKey(inputValue, rememberKey)
     setInputValue('')
   }
 
@@ -51,7 +57,14 @@ export const DraftCreator = ({
   if (!openAiKey) {
     return (
       <div className="mx-auto mt-8">
-        <Label htmlFor="openai-key-input" className="block mb-2 font-semibold">
+        <p>
+          We need you to provide an API key for OpenAI, which we use for GenAI.
+          This application runs entirely client side!
+        </p>
+        <Label
+          htmlFor="openai-key-input"
+          className="block mb-2 font-semibold mt-4"
+        >
           OpenAI API key
         </Label>
         <form onSubmit={handleKeySubmit} className="flex gap-2 items-end">
@@ -64,6 +77,14 @@ export const DraftCreator = ({
             className="flex-1"
             autoComplete="off"
           />
+          <Checkbox
+            checked={rememberKey}
+            onCheckedChange={(checked) => setRememberKey(!!checked)}
+            id="remember-key-checkbox"
+          />
+          <Label htmlFor="remember-key-checkbox" className="mb-0 ml-2">
+            Remember key
+          </Label>
           <Button type="submit">Save Key</Button>
         </form>
       </div>

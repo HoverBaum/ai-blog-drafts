@@ -4,7 +4,10 @@ import React, { createContext, useContext, useState, ReactNode } from 'react'
 // Define the context type
 interface OpenAiKeyContextType {
   openAiKey: string
-  setOpenAiKey: (key: string) => void
+  rememberKey: boolean
+  loading: boolean
+  setOpenAiKey: (key: string, remember?: boolean) => void
+  setRememberKey: (remember: boolean) => void
 }
 
 // Create the context with default values
@@ -14,9 +17,46 @@ const OpenAiKeyContext = createContext<OpenAiKeyContextType | undefined>(
 
 // Provider component
 export const OpenAiKeyProvider = ({ children }: { children: ReactNode }) => {
-  const [openAiKey, setOpenAiKey] = useState('')
+  const [openAiKey, setOpenAiKeyState] = useState('')
+  const [rememberKey, setRememberKeyState] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  // On mount, load from localStorage if present
+  React.useEffect(() => {
+    const storedKey = localStorage.getItem('openai-api-key')
+    const storedRemember = localStorage.getItem('openai-api-key-remember')
+    if (storedKey && storedRemember === 'true') {
+      setOpenAiKeyState(storedKey)
+      setRememberKeyState(true)
+    }
+    setLoading(false)
+  }, [])
+
+  const setOpenAiKey = (key: string, remember?: boolean) => {
+    setOpenAiKeyState(key)
+    if (remember ?? rememberKey) {
+      localStorage.setItem('openai-api-key', key)
+      localStorage.setItem('openai-api-key-remember', 'true')
+      setRememberKeyState(true)
+    } else {
+      localStorage.removeItem('openai-api-key')
+      localStorage.setItem('openai-api-key-remember', 'false')
+      setRememberKeyState(false)
+    }
+  }
+
+  const setRememberKey = (remember: boolean) => {
+    setRememberKeyState(remember)
+    localStorage.setItem('openai-api-key-remember', remember ? 'true' : 'false')
+    if (!remember) {
+      localStorage.removeItem('openai-api-key')
+    }
+  }
+
   return (
-    <OpenAiKeyContext.Provider value={{ openAiKey, setOpenAiKey }}>
+    <OpenAiKeyContext.Provider
+      value={{ openAiKey, rememberKey, loading, setOpenAiKey, setRememberKey }}
+    >
       {children}
     </OpenAiKeyContext.Provider>
   )
