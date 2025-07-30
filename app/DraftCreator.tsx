@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   ExampleArray,
   OptionalAudio,
   OptionalString,
   runFluss,
 } from './blogpostDraft.fluss'
+import { useOpenAiKey } from '../components/OpenAiKeyContext'
 import { voiceNoteToString } from './_flussFunctions/voiceNoteToString'
 import { structureDescription } from './_flussFunctions/structureDescription'
 import { writeDraft } from './_flussFunctions/writeDraft'
@@ -20,6 +21,15 @@ export const DraftCreator = ({
   ideaText,
   audioBlob,
 }: DraftCreatorProps) => {
+  const { openAiKey, setOpenAiKey } = useOpenAiKey()
+  const [inputValue, setInputValue] = useState('')
+
+  const handleKeySubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setOpenAiKey(inputValue)
+    setInputValue('')
+  }
+
   const createDeraft = async () => {
     runFluss({
       inputs: {
@@ -33,6 +43,23 @@ export const DraftCreator = ({
         writeDraft: writeDraft,
       },
     })
+  }
+
+  if (!openAiKey) {
+    return (
+      <div>
+        <p>No OpenAI API key set. Please enter your key:</p>
+        <form onSubmit={handleKeySubmit}>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Enter OpenAI API key"
+          />
+          <button type="submit">Save Key</button>
+        </form>
+      </div>
+    )
   }
 
   return (
