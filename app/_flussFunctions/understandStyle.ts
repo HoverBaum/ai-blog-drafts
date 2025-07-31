@@ -17,12 +17,9 @@ export const understandStyle = (
 2. Sentence Structure: Typical length, complexity, punctuation habits.
 3. Paragraph & Formatting Style: Paragraph length, use of headings/lists, formatting choices.
 4. Tone & Voice: Overall mood, point of view, directness.
-5. Rhythm & Flow: Repetition, cadence, pacing.
-6. Storytelling Techniques: Anecdotes, dialogue, imagery.
-7. Structural Patterns: Article structure, transitions.
-8. Use of Questions & Calls to Action: Engagement tactics.
-9. Recurring Themes & Motifs: Topics, analogies, cultural references.
-10. Humor & Playfulness: Use of jokes, puns, or self-deprecation.
+5. Storytelling Techniques: Anecdotes, dialogue, imagery.
+6. Structural Patterns: Article structure, transitions, emoji use.
+7. Humor & Playfulness: Use of jokes, puns, or self-deprecation.
 
 Reply only with a description of the style, no other text.
 
