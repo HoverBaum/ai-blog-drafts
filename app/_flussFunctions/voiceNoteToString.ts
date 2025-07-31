@@ -1,13 +1,22 @@
+import OpenAI from 'openai'
 import { VoiceNoteToStringStepFunction } from '../blogpostDraft.fluss'
 
-export const voiceNoteToString: VoiceNoteToStringStepFunction = async (
-  args
-) => {
-  // Artificiallly simulate a delay.
-  await new Promise((resolve) => setTimeout(resolve, 500))
+export const voiceNoteToString =
+  (client: OpenAI): VoiceNoteToStringStepFunction =>
+  async (args) => {
+    const { postVoiceNote } = args
+    if (!postVoiceNote) return undefined
 
-  const { postVoiceNote } = args
-  if (!postVoiceNote) return undefined
+    const audiofile = new File([postVoiceNote], 'audiofile', {
+      type: 'audio/webm',
+    })
 
-  return 'wow, much audio, very string' // Placeholder for actual audio processing logic
-}
+    const transcription = await client.audio.transcriptions.create({
+      file: audiofile,
+      model: 'gpt-4o-mini-transcribe',
+      response_format: 'text',
+    })
+    const transcribedText = transcription
+
+    return transcribedText
+  }

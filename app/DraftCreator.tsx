@@ -76,7 +76,7 @@ export const DraftCreator = ({
         examplePosts: examples,
       },
       stepFunctions: {
-        voiceNoteToString: voiceNoteToString,
+        voiceNoteToString: voiceNoteToString(client),
         structureDescription: structureDescription(client),
         writeDraft: writeDraft(client),
         understandStyle: understandStyle(client),
