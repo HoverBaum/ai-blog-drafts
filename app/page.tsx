@@ -35,7 +35,7 @@ export default function Home() {
         </Alert>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:p-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:p-8">
         <div>
           <h3>Blog idea</h3>
           <p className="leading-7 mt-4">
