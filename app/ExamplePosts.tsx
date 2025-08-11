@@ -18,9 +18,13 @@ const LOCAL_STORAGE_KEY = 'ai_draft_examples'
 
 type ExamplePostsProps = {
   onExamplesChange: (examples: ExamplePost[]) => void
+  hideHeader?: boolean
 }
 
-export const ExamplePosts = ({ onExamplesChange }: ExamplePostsProps) => {
+export const ExamplePosts = ({
+  onExamplesChange,
+  hideHeader = false,
+}: ExamplePostsProps) => {
   const [examples, setExamples] = useState<ExamplePost[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -47,14 +51,18 @@ export const ExamplePosts = ({ onExamplesChange }: ExamplePostsProps) => {
 
   return (
     <div>
-      <h3>Example posts {examples.length > 0 && `(${examples.length})`}</h3>
-      <p className="mt-4">
-        Add example of Blogposts your wrote yourself and are proud of or would
-        like the AI to use the style of. These posts will be analyzed to help
-        generate better drafts.
-        <br />
-        We recommend adding at least 3 examples.
-      </p>
+      {!hideHeader && (
+        <>
+          <h3>Example posts {examples.length > 0 && `(${examples.length})`}</h3>
+          <p className="mt-4">
+            Add example of Blogposts your wrote yourself and are proud of or
+            would like the AI to use the style of. These posts will be analyzed
+            to help generate better drafts.
+            <br />
+            We recommend adding at least 3 examples.
+          </p>
+        </>
+      )}
 
       {examples.map((example, idx) => (
         <Card key={example.id} className="my-8">

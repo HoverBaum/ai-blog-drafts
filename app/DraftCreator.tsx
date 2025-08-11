@@ -33,12 +33,14 @@ export type DraftCreatorProps = {
   examples: ExampleArray
   ideaText: OptionalString
   audioBlob: OptionalAudio
+  hideHeader?: boolean
 }
 
 export const DraftCreator = ({
   examples,
   ideaText,
   audioBlob,
+  hideHeader = false,
 }: DraftCreatorProps) => {
   const {
     openAiKey,
@@ -101,7 +103,7 @@ export const DraftCreator = ({
       />
 
       <section className="mt-6">
-        <h3>Create Draft</h3>
+        {!hideHeader && <h3>Create Draft</h3>}
         {!providedAllInputs && (
           <Alert className="my-2">
             <LightbulbIcon />
