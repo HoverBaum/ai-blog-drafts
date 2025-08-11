@@ -27,10 +27,23 @@ export default function Home() {
       <div className="my-4 flex justify-center">
         <Alert className="max-w-prose">
           <InfoIcon />
-          <AlertTitle>This is a Fluss-Vis Demo</AlertTitle>
+          <AlertTitle>This is a Fluss Vis Demo</AlertTitle>
           <AlertDescription>
-            Learn more about how Fluss Vis powers this application and what it
-            can do for you at: LINK COMING SOON
+            <p>
+              Learn more about how Fluss Vis powers this application and what it
+              can do for you at:{' '}
+              <a
+                href="https://github.com/HoverBaum/fluss-vis"
+                className="underline"
+              >
+                GitHub - HoverBaum/fluss-vis
+              </a>{' '}
+              and use it yourself at:{' '}
+              <a href="https://flussvis.dev" className="underline">
+                FlussVis.dev
+              </a>
+              .
+            </p>
           </AlertDescription>
         </Alert>
       </div>
