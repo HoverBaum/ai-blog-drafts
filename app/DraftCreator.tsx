@@ -175,9 +175,7 @@ export const DraftCreator = ({
         <section className="mt-6">
           <h3>Your draft</h3>
           <div className="p-4">
-            <Card className="p-4">
-              <Markdown>{postDraft}</Markdown>
-            </Card>
+            <Markdown>{postDraft}</Markdown>
           </div>
           <Button
             className="mt-4"
