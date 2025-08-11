@@ -4,17 +4,16 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { useEffect, useState } from 'react'
-import { PlusIcon, TrashIcon } from 'lucide-react'
+import { ChevronDown, PlusIcon, TrashIcon } from 'lucide-react'
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible'
 import { ExamplePost } from './blogpostDraft.fluss'
 
 const LOCAL_STORAGE_KEY = 'ai_draft_examples'
+const LOCAL_STORAGE_OPEN_KEY = 'ai_draft_examples_open'
 
 type ExamplePostsProps = {
   onExamplesChange: (examples: ExamplePost[]) => void
@@ -27,12 +26,19 @@ export const ExamplePosts = ({
 }: ExamplePostsProps) => {
   const [examples, setExamples] = useState<ExamplePost[]>([])
   const [loading, setLoading] = useState(true)
+  const [openMap, setOpenMap] = useState<Record<string, boolean>>({})
 
   // Initially load examples from local storage, if any are present.
   useEffect(() => {
     const storedExamples = localStorage.getItem(LOCAL_STORAGE_KEY)
     if (storedExamples) {
       setExamples(JSON.parse(storedExamples))
+    }
+    const storedOpenMap = localStorage.getItem(LOCAL_STORAGE_OPEN_KEY)
+    if (storedOpenMap) {
+      try {
+        setOpenMap(JSON.parse(storedOpenMap))
+      } catch {}
     }
     setLoading(false)
   }, [])
@@ -49,6 +55,12 @@ export const ExamplePosts = ({
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(examples))
   }, [examples, loading])
 
+  // Save collapsible open state to local storage whenever it changes.
+  useEffect(() => {
+    if (loading) return
+    localStorage.setItem(LOCAL_STORAGE_OPEN_KEY, JSON.stringify(openMap))
+  }, [openMap, loading])
+
   return (
     <div>
       {!hideHeader && (
@@ -64,85 +76,104 @@ export const ExamplePosts = ({
         </>
       )}
 
-      {examples.map((example, idx) => (
-        <Card key={example.id} className="my-8">
-          <CardHeader>
-            <CardTitle>{example.title || 'Untitled'} </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="mb-3">
-              <Label
-                className="font-semibold"
-                htmlFor={`example-title-${example.id}`}
-              >
-                Title
-              </Label>
-              <Input
-                id={`example-title-${example.id}`}
-                className="mt-1"
-                value={example.title}
-                onChange={(e) => {
-                  const newTitle = e.target.value
-                  setExamples((exs) =>
-                    exs.map((ex, i) =>
-                      i === idx ? { ...ex, title: newTitle } : ex
-                    )
-                  )
-                }}
-                placeholder="Enter example post title"
-              />
-            </div>
-            <div>
-              <Label
-                className="font-semibold"
-                htmlFor={`example-content-${example.id}`}
-              >
-                Content
-              </Label>
-              <Textarea
-                id={`example-content-${example.id}`}
-                className="mt-1 h-32 overflow-auto resize-none"
-                value={example.content}
-                onChange={(e) => {
-                  const newContent = e.target.value
-                  setExamples((exs) =>
-                    exs.map((ex, i) =>
-                      i === idx ? { ...ex, content: newContent } : ex
-                    )
-                  )
-                }}
-                placeholder="Enter example post content"
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-end">
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => {
-                setExamples((exs) => exs.filter((_, i) => i !== idx))
-              }}
-              type="button"
+      <div className="mt-6 divide-y divide-border">
+        {examples.map((example, idx) => (
+          <div key={example.id} className="py-4">
+            <Collapsible
+              open={openMap[example.id] ?? true}
+              onOpenChange={(open) =>
+                setOpenMap((m) => ({ ...m, [example.id]: open }))
+              }
             >
-              <TrashIcon /> Remove
-            </Button>
-          </CardFooter>
-        </Card>
-      ))}
+              <div className="flex items-center justify-between gap-2">
+                <CollapsibleTrigger className="group inline-flex items-center gap-2 text-left outline-none">
+                  <ChevronDown className="h-4 w-4 shrink-0 transition-transform group-data-[state=open]:rotate-180" />
+                  <span className="font-medium">
+                    Example {idx + 1}: {example.title || 'Untitled'}
+                  </span>
+                </CollapsibleTrigger>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    setExamples((exs) => exs.filter((_, i) => i !== idx))
+                    setOpenMap((m) => {
+                      const { [example.id]: _removed, ...rest } = m
+                      return rest
+                    })
+                  }}
+                  type="button"
+                >
+                  <TrashIcon className="mr-1 h-4 w-4" /> Remove
+                </Button>
+              </div>
+
+              <CollapsibleContent className="mt-4 space-y-4">
+                <div>
+                  <Label
+                    className="font-semibold"
+                    htmlFor={`example-title-${example.id}`}
+                  >
+                    Title
+                  </Label>
+                  <Input
+                    id={`example-title-${example.id}`}
+                    className="mt-1"
+                    value={example.title}
+                    onChange={(e) => {
+                      const newTitle = e.target.value
+                      setExamples((exs) =>
+                        exs.map((ex, i) =>
+                          i === idx ? { ...ex, title: newTitle } : ex
+                        )
+                      )
+                    }}
+                    placeholder="Enter example post title"
+                  />
+                </div>
+                <div>
+                  <Label
+                    className="font-semibold"
+                    htmlFor={`example-content-${example.id}`}
+                  >
+                    Content
+                  </Label>
+                  <Textarea
+                    id={`example-content-${example.id}`}
+                    className="mt-1 h-32 overflow-auto resize-none"
+                    value={example.content}
+                    onChange={(e) => {
+                      const newContent = e.target.value
+                      setExamples((exs) =>
+                        exs.map((ex, i) =>
+                          i === idx ? { ...ex, content: newContent } : ex
+                        )
+                      )
+                    }}
+                    placeholder="Enter example post content"
+                  />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+        ))}
+      </div>
 
       <Button
         className={`${examples.length === 0 ? 'mt-6' : ''}`}
-        onClick={() =>
+        onClick={() => {
+          const newId = Date.now().toString()
           setExamples((current) =>
             current.concat([
               {
-                id: Date.now().toString(),
+                id: newId,
                 title: '',
                 content: '',
               },
             ])
           )
-        }
+          setOpenMap((m) => ({ ...m, [newId]: true }))
+        }}
       >
         <PlusIcon /> Add Example Post
       </Button>
