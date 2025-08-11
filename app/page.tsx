@@ -73,9 +73,11 @@ export default function Home() {
               <CardAction>
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="gap-2">
-                    Toggle
+                    {step1Open ? 'Collapse' : 'Expand'}
                     <ChevronsUpDownIcon className="h-4 w-4" />
-                    <span className="sr-only">Toggle step 1</span>
+                    <span className="sr-only">
+                      {step1Open ? 'Collapse step 1' : 'Expand step 1'}
+                    </span>
                   </Button>
                 </CollapsibleTrigger>
               </CardAction>
@@ -115,9 +117,11 @@ export default function Home() {
               <CardAction>
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="gap-2">
-                    Toggle
+                    {step2Open ? 'Collapse' : 'Expand'}
                     <ChevronsUpDownIcon className="h-4 w-4" />
-                    <span className="sr-only">Toggle step 2</span>
+                    <span className="sr-only">
+                      {step2Open ? 'Collapse step 2' : 'Expand step 2'}
+                    </span>
                   </Button>
                 </CollapsibleTrigger>
               </CardAction>
